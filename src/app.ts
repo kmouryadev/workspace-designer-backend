@@ -1,5 +1,6 @@
 import express, { type Express } from "express";
 import cors from "cors";
+import { createCatalogRouter } from "./routes/catalog";
 
 export function createApp(): Express {
   const app = express();
@@ -14,6 +15,8 @@ export function createApp(): Express {
   app.get("/health", (_req, res) => {
     res.json({ ok: true });
   });
+
+  app.use(createCatalogRouter());
 
   return app;
 }
