@@ -1,4 +1,4 @@
-import { desc, sql } from "drizzle-orm";
+import { desc, eq, sql } from "drizzle-orm";
 import { getDb } from "../db/connection";
 import { rentalRequests } from "../db/schema";
 
@@ -12,6 +12,10 @@ export const RentalRequestModel = {
 
   findAll(): RentalRequestRow[] {
     return getDb().select().from(rentalRequests).orderBy(desc(rentalRequests.createdAt)).all();
+  },
+
+  findById(id: string): RentalRequestRow | undefined {
+    return getDb().select().from(rentalRequests).where(eq(rentalRequests.id, id)).get();
   },
 
   count(): number {

@@ -17,4 +17,15 @@ export const requestsController = {
   list(_req: Request, res: Response): void {
     res.json(rentalRequestService.listAll());
   },
+
+  getById(req: Request, res: Response): void {
+    const found = rentalRequestService.getById(req.params.id);
+
+    if (!found) {
+      res.status(404).json({ error: "Request not found." });
+      return;
+    }
+
+    res.json(found);
+  },
 };

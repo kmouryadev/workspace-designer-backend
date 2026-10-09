@@ -68,6 +68,7 @@ manager, or a tool like `dotenv-cli` if you want `.env` loaded for you.
 | GET | `/catalog` | none | Full item catalog (desks, chairs, monitors, lighting, plants, coffee, surfboards, motorcycles, relax zone) |
 | POST | `/requests` | none | Submit a rental request |
 | GET | `/requests` | `x-api-key` header | List all rental requests, newest first |
+| GET | `/requests/:id` | none | Look up a single rental request by its id (e.g. `MR-12345`) |
 
 ## Testing
 
@@ -83,3 +84,9 @@ npm test
   `monthlyTotalK`/`periodTotalK` the frontend sends, which it computes
   from the catalog data it already fetched.
 - Not deployed anywhere yet — runs locally only.
+- `GET /requests/:id` is unauthenticated by design, so the frontend can let
+  a visitor look up their own submission's history. The id (`MR-#####`) is
+  the only access control, and the id space is small (5 digits), so this
+  is a deliberate, low-stakes tradeoff for a demo app — not something to
+  carry into a product handling real personal data without adding a
+  harder-to-guess token or real auth.

@@ -100,3 +100,28 @@ describe("GET /requests", () => {
     expect(res.body[1].fullName).toBe("First");
   });
 });
+
+describe("GET /requests/:id", () => {
+  beforeEach(() => {
+    initializeDb(":memory:");
+  });
+
+  it("returns the request matching the id, no api key required", async () => {
+    const app = createApp();
+
+    const created = await request(app).post("/requests").send(validBody());
+    const res = await request(app).get(`/requests/${created.body.id}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body.id).toBe(created.body.id);
+    expect(res.body.fullName).toBe("Jane Doe");
+  });
+
+  it("returns 404 for an id that does not exist", async () => {
+    const app = createApp();
+
+    const res = await request(app).get("/requests/MR-00000");
+
+    expect(res.status).toBe(404);
+  });
+});

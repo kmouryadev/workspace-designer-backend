@@ -21,4 +21,9 @@ export const rentalRequestService = {
   listAll(): RentalRequestDto[] {
     return RentalRequestModel.findAll().map(toRentalRequestDto);
   },
+
+  getById(id: string): RentalRequestDto | undefined {
+    const row = RentalRequestModel.findById(id);
+    return row ? toRentalRequestDto(row) : undefined;
+  },
 };
