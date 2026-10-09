@@ -1,3 +1,5 @@
+import fs from "node:fs";
+import path from "node:path";
 import Database from "better-sqlite3";
 import { drizzle, type BetterSQLite3Database } from "drizzle-orm/better-sqlite3";
 import * as schema from "./schema";
@@ -7,6 +9,10 @@ export type DrizzleDb = BetterSQLite3Database<typeof schema>;
 let dbInstance: DrizzleDb | null = null;
 
 export function createDb(filePath: string = process.env.DB_PATH ?? "./data.sqlite"): Database.Database {
+  if (filePath !== ":memory:") {
+    fs.mkdirSync(path.dirname(filePath), { recursive: true });
+  }
+
   const db = new Database(filePath);
   db.pragma("journal_mode = WAL");
   migrate(db);
