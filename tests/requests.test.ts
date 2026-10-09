@@ -26,12 +26,14 @@ function validBody(overrides: Record<string, unknown> = {}) {
 }
 
 describe("POST /requests", () => {
+  const apiKey = "test-admin-key";
+
   beforeEach(() => {
     initializeDb(":memory:");
   });
 
   it("creates a request and returns 201 with a generated id", async () => {
-    const app = createApp();
+    const app = createApp(apiKey);
 
     const res = await request(app).post("/requests").send(validBody());
 
@@ -44,7 +46,7 @@ describe("POST /requests", () => {
   });
 
   it("returns 400 with field errors for invalid input", async () => {
-    const app = createApp();
+    const app = createApp(apiKey);
 
     const res = await request(app).post("/requests").send(validBody({ email: "nope" }));
 
@@ -53,10 +55,48 @@ describe("POST /requests", () => {
   });
 
   it("does not insert a row when validation fails", async () => {
-    const app = createApp();
+    const app = createApp(apiKey);
 
     await request(app).post("/requests").send(validBody({ fullName: "" }));
 
     expect(RentalRequestModel.count()).toBe(0);
+  });
+});
+
+describe("GET /requests", () => {
+  const apiKey = "test-admin-key";
+
+  beforeEach(() => {
+    initializeDb(":memory:");
+  });
+
+  it("returns 401 without an api key", async () => {
+    const app = createApp(apiKey);
+
+    const res = await request(app).get("/requests");
+
+    expect(res.status).toBe(401);
+  });
+
+  it("returns 401 with the wrong api key", async () => {
+    const app = createApp(apiKey);
+
+    const res = await request(app).get("/requests").set("x-api-key", "wrong-key");
+
+    expect(res.status).toBe(401);
+  });
+
+  it("returns requests newest first with the right api key", async () => {
+    const app = createApp(apiKey);
+
+    await request(app).post("/requests").send(validBody({ fullName: "First" }));
+    await request(app).post("/requests").send(validBody({ fullName: "Second" }));
+
+    const res = await request(app).get("/requests").set("x-api-key", apiKey);
+
+    expect(res.status).toBe(200);
+    expect(res.body.length).toBe(2);
+    expect(res.body[0].fullName).toBe("Second");
+    expect(res.body[1].fullName).toBe("First");
   });
 });

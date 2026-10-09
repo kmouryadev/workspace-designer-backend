@@ -3,7 +3,7 @@ import cors from "cors";
 import { createCatalogRouter } from "./routes/catalog";
 import { createRequestsRouter } from "./routes/requests";
 
-export function createApp(): Express {
+export function createApp(apiKey: string = process.env.API_KEY ?? ""): Express {
   const app = express();
 
   app.use(
@@ -18,7 +18,7 @@ export function createApp(): Express {
   });
 
   app.use(createCatalogRouter());
-  app.use(createRequestsRouter());
+  app.use(createRequestsRouter(apiKey));
 
   return app;
 }

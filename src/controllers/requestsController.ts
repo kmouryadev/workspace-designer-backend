@@ -13,4 +13,8 @@ export const requestsController = {
 
     res.status(201).json(result.request);
   },
+
+  list(_req: Request, res: Response): void {
+    res.json(rentalRequestService.listAll());
+  },
 };
